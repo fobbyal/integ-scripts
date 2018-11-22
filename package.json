@@ -1,0 +1,26 @@
+{
+  "name": "integ-react-scripts",
+  "version": "0.0.0-alpha",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "add-contributor": "node src contributors add",
+    "test": "node src test",
+    "test:update": "node src test --updateSnapshot",
+    "build": "node src build",
+    "lint": "node src lint",
+    "format": "node src format",
+    "validate": "node src validate",
+    "precommit": "node src precommit"
+  },
+  "bin": {
+    "integ-scripts": "dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "cross-spawn": "^6.0.5",
+    "glob": "^7.1.3"
+  }
+}
