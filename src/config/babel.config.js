@@ -11,11 +11,14 @@ const isUMD = BUILD_FORMAT === 'umd'
 const isCJS = BUILD_FORMAT === 'cjs'
 const isWebpack = parseEnv('BUILD_WEBPACK', false)
 const treeshake = parseEnv('BUILD_TREESHAKE', isRollup || isWebpack)
-const alias = parseEnv('BUILD_ALIAS', isPreact ? { react: 'preact' } : null)
+const alias = parseEnv(
+  'BUILD_ALIAS',
+  isPreact ? { react: 'preact' } : null
+)
 
-console.log('pkg is', pkg)
-
-const hasBabelRuntimeDep = Boolean(pkg.dependencies && pkg.dependencies['@babel/runtime'])
+const hasBabelRuntimeDep = Boolean(
+  pkg.dependencies && pkg.dependencies['@babel/runtime']
+)
 const RUNTIME_HELPERS_WARN =
   'You should add @babel/runtime as dependency to your package. It will allow reusing so-called babel helpers from npm rather than bundling their copies into your files.'
 
@@ -30,14 +33,20 @@ if (!treeshake && !hasBabelRuntimeDep) {
  * fallback to the default if don't found custom configuration
  * @see https://github.com/browserslist/browserslist/blob/master/node.js#L139
  */
-const browsersConfig = browserslist.loadConfig({ path: appDirectory }) || ['ie 10', 'ios 7']
+const browsersConfig = browserslist.loadConfig({
+  path: appDirectory,
+}) || ['ie 10', 'ios 7']
 
 const envTargets = isTest
   ? { node: 'current' }
   : isWebpack || isRollup
   ? { browsers: browsersConfig }
   : { node: getNodeVersion(pkg) }
-const envOptions = { modules: false, loose: true, targets: envTargets }
+const envOptions = {
+  modules: false,
+  loose: true,
+  targets: envTargets,
+}
 
 module.exports = api => {
   api.cache.invalidate(() => process.env.NODE_ENV)
@@ -46,26 +55,50 @@ module.exports = api => {
       [require.resolve('@babel/preset-env'), envOptions],
       ifAnyDep(
         ['react', 'preact'],
-        [require.resolve('@babel/preset-react'), { pragma: isPreact ? 'React.h' : undefined }]
+        [
+          require.resolve('@babel/preset-react'),
+          { pragma: isPreact ? 'React.h' : undefined },
+        ]
       ),
     ].filter(Boolean),
     plugins: [
-      [require.resolve('@babel/plugin-transform-runtime'), { useESModules: treeshake && !isCJS }],
-      require.resolve('babel-plugin-macros'),
-      alias ? [require.resolve('babel-plugin-module-resolver'), { root: ['./src'], alias }] : null,
       [
-        require.resolve('babel-plugin-transform-react-remove-prop-types'),
+        require.resolve('@babel/plugin-transform-runtime'),
+        { useESModules: treeshake && !isCJS },
+      ],
+      require.resolve('babel-plugin-macros'),
+      alias
+        ? [
+            require.resolve('babel-plugin-module-resolver'),
+            { root: ['./src'], alias },
+          ]
+        : null,
+      [
+        require.resolve(
+          'babel-plugin-transform-react-remove-prop-types'
+        ),
         isPreact ? { removeImport: true } : { mode: 'unsafe-wrap' },
       ],
-      isUMD ? require.resolve('babel-plugin-transform-inline-environment-variables') : null,
-      [require.resolve('@babel/plugin-proposal-class-properties'), { loose: true }],
+      isUMD
+        ? require.resolve(
+            'babel-plugin-transform-inline-environment-variables'
+          )
+        : null,
+      [
+        require.resolve('@babel/plugin-proposal-class-properties'),
+        { loose: true },
+      ],
       require.resolve('babel-plugin-minify-dead-code-elimination'),
-      treeshake ? null : require.resolve('@babel/plugin-transform-modules-commonjs'),
+      treeshake
+        ? null
+        : require.resolve('@babel/plugin-transform-modules-commonjs'),
     ].filter(Boolean),
   }
 }
 
-function getNodeVersion({ engines: { node: nodeVersion = '8' } = {} }) {
+function getNodeVersion({
+  engines: { node: nodeVersion = '8' } = {},
+}) {
   const oldestVersion = semver
     .validRange(nodeVersion)
     .replace(/[>=<|]/g, ' ')

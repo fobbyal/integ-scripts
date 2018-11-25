@@ -20,7 +20,10 @@ const appDirectory = path.dirname(pkgPath)
 // }
 
 // eslint-disable-next-line complexity
-function resolveBin(modName, { executable = modName, cwd = process.cwd() } = {}) {
+function resolveBin(
+  modName,
+  { executable = modName, cwd = process.cwd() } = {}
+) {
   let pathFromWhich
   try {
     pathFromWhich = fs.realpathSync(which.sync(executable))
@@ -47,19 +50,23 @@ function resolveBin(modName, { executable = modName, cwd = process.cwd() } = {})
 
 const fromRoot = (...p) => path.join(appDirectory, ...p)
 const hasFile = (...p) => fs.existsSync(fromRoot(...p))
-const ifFile = (files, t, f) => (arrify(files).some(file => hasFile(file)) ? t : f)
+const ifFile = (files, t, f) =>
+  arrify(files).some(file => hasFile(file)) ? t : f
 
 const hasPkgProp = props => arrify(props).some(prop => has(pkg, prop))
 
-const hasPkgSubProp = pkgProp => props => hasPkgProp(arrify(props).map(p => `${pkgProp}.${p}`))
+const hasPkgSubProp = pkgProp => props =>
+  hasPkgProp(arrify(props).map(p => `${pkgProp}.${p}`))
 
-const ifPkgSubProp = pkgProp => (props, t, f) => (hasPkgSubProp(pkgProp)(props) ? t : f)
+const ifPkgSubProp = pkgProp => (props, t, f) =>
+  hasPkgSubProp(pkgProp)(props) ? t : f
 
 const hasScript = hasPkgSubProp('scripts')
 const hasPeerDep = hasPkgSubProp('peerDependencies')
 const hasDep = hasPkgSubProp('dependencies')
 const hasDevDep = hasPkgSubProp('devDependencies')
-const hasAnyDep = args => [hasDep, hasDevDep, hasPeerDep].some(fn => fn(args))
+const hasAnyDep = args =>
+  [hasDep, hasDevDep, hasPeerDep].some(fn => fn(args))
 
 const ifPeerDep = ifPkgSubProp('peerDependencies')
 const ifDep = ifPkgSubProp('dependencies')
@@ -79,7 +86,11 @@ function parseEnv(name, def) {
 }
 
 function envIsSet(name) {
-  return process.env.hasOwnProperty(name) && process.env[name] && process.env[name] !== 'undefined'
+  return (
+    process.env.hasOwnProperty(name) &&
+    process.env[name] &&
+    process.env[name] !== 'undefined'
+  )
 }
 
 function getConcurrentlyArgs(scripts, { killOthers = true } = {}) {
@@ -100,7 +111,11 @@ function getConcurrentlyArgs(scripts, { killOthers = true } = {}) {
     return all
   }, {})
   const prefixColors = Object.keys(scripts)
-    .reduce((pColors, _s, i) => pColors.concat([`${colors[i % colors.length]}.bold.reset`]), [])
+    .reduce(
+      (pColors, _s, i) =>
+        pColors.concat([`${colors[i % colors.length]}.bold.reset`]),
+      []
+    )
     .join(',')
 
   // prettier-ignore

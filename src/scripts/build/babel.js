@@ -1,7 +1,12 @@
 const path = require('path')
 const spawn = require('cross-spawn')
 const rimraf = require('rimraf')
-const { hasPkgProp, fromRoot, resolveBin, hasFile } = require('../../utils')
+const {
+  hasPkgProp,
+  fromRoot,
+  resolveBin,
+  hasFile,
+} = require('../../utils')
 
 const args = process.argv.slice(2)
 const here = p => path.join(__dirname, p)
@@ -12,11 +17,17 @@ const useBuiltinConfig =
   !hasFile('.babelrc.js') &&
   !hasFile('babel.config.js') &&
   !hasPkgProp('babel')
-const config = useBuiltinConfig ? ['--presets', here('../../config/babel.config.js')] : []
+const config = useBuiltinConfig
+  ? ['--presets', here('../../config/babel.config.js')]
+  : []
 
-const ignore = args.includes('--ignore') ? [] : ['--ignore', '__tests__,__mocks__']
+const ignore = args.includes('--ignore')
+  ? []
+  : ['--ignore', '__tests__,__mocks__']
 
-const copyFiles = args.includes('--no-copy-files') ? [] : ['--copy-files']
+const copyFiles = args.includes('--no-copy-files')
+  ? []
+  : ['--copy-files']
 
 const useSpecifiedOutDir = args.includes('--out-dir')
 const outDir = useSpecifiedOutDir ? [] : ['--out-dir', 'dist']
