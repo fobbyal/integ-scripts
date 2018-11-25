@@ -9,12 +9,14 @@ const isPreact = parseEnv('BUILD_PREACT', false)
 const isRollup = parseEnv('BUILD_ROLLUP', false)
 const isUMD = BUILD_FORMAT === 'umd'
 const isCJS = BUILD_FORMAT === 'cjs'
-const isWebpack = parseEnv('BUILD_WEBPACK', false)
+const isWebpack = parseEnv('BUILD_WEBPACK', true)
 const treeshake = parseEnv('BUILD_TREESHAKE', isRollup || isWebpack)
 const alias = parseEnv(
   'BUILD_ALIAS',
   isPreact ? { react: 'preact' } : null
 )
+
+// console.log('process env is', process.env)
 
 const hasBabelRuntimeDep = Boolean(
   pkg.dependencies && pkg.dependencies['@babel/runtime']
@@ -48,8 +50,9 @@ const envOptions = {
   targets: envTargets,
 }
 
-module.exports = api => {
-  api.cache.invalidate(() => process.env.NODE_ENV)
+module.exports = function(api) {
+  if (api != null && api.cache != null)
+    api.cache.invalidate(() => process.env.NODE_ENV)
   return {
     presets: [
       [require.resolve('@babel/preset-env'), envOptions],

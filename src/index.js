@@ -14,5 +14,4 @@ if (shouldThrow) {
       'because we dogfood the untranspiled version of the scripts.'
   )
 }
-
 require('./run-script')
