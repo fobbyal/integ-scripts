@@ -190,7 +190,7 @@ module.exports = {
   parseEnv,
   pkg,
   resolveBin,
-  //resolveKcdScripts,
+  // resolveKcdScripts,
   uniq,
   writeExtraEntry,
 }
