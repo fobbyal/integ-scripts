@@ -11,8 +11,6 @@
     "lint": "node src lint",
     "format": "node src format",
     "validate": "node src validate",
-    "prepublish": "npm run build",
-    "postpublish": "publish-latest",
     "semantic-release": "semantic-release"
   },
   "bin": {
