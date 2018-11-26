@@ -13,7 +13,7 @@
     "validate": "node src validate",
     "prepublish": "npm run build",
     "postpublish": "publish-latest",
-    "semantic-release": "semantic-release-pre"
+    "semantic-release": "semantic-release"
   },
   "bin": {
     "integ-scripts": "dist/index.js"
