@@ -1,14 +1,12 @@
 module.export = {
-  release: {
-    publish: [
-      '@semantic-release/npm',
-      {
-        path: '@semantic-release/git',
-        assets: ['package.json', 'dist/**/*.{js|css}', 'docs'],
-        message:
-          'chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}',
-      },
+  plugins: [
+    '@semantic-release/commit-analyzer',
+    '@semantic-release/release-notes-generator',
+    [
       '@semantic-release/github',
+      {
+        assets: [{ path: 'dist/**/*.*', label: 'CSS distribution' }],
+      },
     ],
-  },
+  ],
 }
