@@ -65,6 +65,10 @@ module.exports = function(api) {
       ),
     ].filter(Boolean),
     plugins: [
+      ifAnyDep(
+        ['react'],
+        [require.resolve('react-hot-loader/babel')]
+      ),
       [
         require.resolve('@babel/plugin-transform-runtime'),
         { useESModules: treeshake && !isCJS },

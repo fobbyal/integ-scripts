@@ -1,7 +1,14 @@
 const babelConfgGenerator = require('./babel.config')
-const { hasPkgProp, hasFile } = require('../utils')
-const path = require('path')
+const { hasPkgProp, hasFile, fromRoot } = require('../utils')
+// const path = require('path')
+const HtmlWebPackPlugin = require('html-webpack-plugin')
+const react = fromRoot('node_modules/react')
+const reactDom = fromRoot('node_modules/react-dom')
+const reactHotLoader = fromRoot('node_modules/react-hot-loader')
+const gridTools = fromRoot('node_modules/@integec/grid-tools')
+
 module.exports = function() {
+  console.log('webpack arguments are', arguments)
   const useBuiltinConfig =
     !hasFile('.babelrc') &&
     !hasFile('.babelrc.js') &&
@@ -22,26 +29,34 @@ module.exports = function() {
           options: babelrc,
         },
       },
+      {
+        test: /\.html$/,
+        use: [
+          {
+            loader: 'html-loader',
+            options: { minimize: true },
+          },
+        ],
+      },
     ],
   }
+
+  const plugins = [
+    new HtmlWebPackPlugin({
+      template: './src/index.html',
+      filename: './index.html',
+    }),
+  ]
 
   const resolve = {
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
     alias: {
-      react: path.resolve(
-        path.join(__dirname, './node_modules/react')
-      ),
-      'babel-core': path.resolve(
-        path.join(__dirname, './node_modules/@babel/core')
-      ),
-      'react-hot-loader': path.resolve(
-        path.join(__dirname, './node_modules/react-hot-loader')
-      ),
-      '@integec/grid-tools': path.resolve(
-        path.join(__dirname, './node_modules/@integec/grid-tools')
-      ),
+      react,
+      'react-dom': reactDom,
+      'react-hot-loader': reactHotLoader,
+      '@integec/grid-tools': gridTools,
     },
   }
 
-  return { module, resolve }
+  return { module, resolve, plugins }
 }

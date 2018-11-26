@@ -9,8 +9,5 @@ jobs:
           name: install
           command: yarn install
       - run:
-          name: build
-          command: yarn build
-      - run:
           name: release
           command: yarn semantic-release || true
