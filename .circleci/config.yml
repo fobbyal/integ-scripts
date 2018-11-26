@@ -10,4 +10,4 @@ jobs:
           command: yarn install
       - run:
           name: release
-          command: yarn semantic-release || true
+          command: yarn semantic-release -d || true
