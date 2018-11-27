@@ -20,7 +20,6 @@ const useSpecifiedOutDir = args.includes('--out-dir')
 if (!useSpecifiedOutDir && !args.includes('--no-clean')) {
   rimraf.sync(fromRoot('dist'))
 }
-console.log('webpack args are', args)
 
 const defaultEnv = [`BUILD_WEBPACK=true`].join(' ')
 

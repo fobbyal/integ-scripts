@@ -20,7 +20,9 @@ const useSpecifiedOutDir = args.includes('--out-dir')
 if (!useSpecifiedOutDir && !args.includes('--no-clean')) {
   rimraf.sync(fromRoot('dist'))
 }
-console.log('webpack args are', args)
+
+const port = args.includes('--port') ? [] : ['--port', '3000']
+const host = args.includes('--host') ? [] : ['--host', '0.0.0.0']
 
 const defaultEnv = [`BUILD_WEBPACK=true`].join(' ')
 
@@ -32,7 +34,10 @@ const result = spawn.sync(
     ...config,
     '--mode',
     'development',
+    ...port,
+    ...host,
     '--hot',
+    '--compress',
   ].concat(args),
   {
     stdio: 'inherit',

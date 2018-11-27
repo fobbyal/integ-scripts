@@ -6,9 +6,20 @@ const react = fromRoot('node_modules/react')
 const reactDom = fromRoot('node_modules/react-dom')
 const reactHotLoader = fromRoot('node_modules/react-hot-loader')
 const gridTools = fromRoot('node_modules/@integec/grid-tools')
+const git = require('git-rev-sync')
+const webpack = require('webpack')
+const autoprefixer = require('autoprefixer')
 
-module.exports = function() {
-  console.log('webpack arguments are', arguments)
+module.exports = function(env, argv) {
+  const isProd = argv.mode === 'production' || env.production
+
+  const gitInfo = {
+    GIT_HASH:
+      hasFile('.git') && isProd
+        ? JSON.stringify(git.short())
+        : '"local"',
+  }
+
   const useBuiltinConfig =
     !hasFile('.babelrc') &&
     !hasFile('.babelrc.js') &&
@@ -19,8 +30,15 @@ module.exports = function() {
     ? babelConfgGenerator({})
     : undefined
 
+  const devtool = isProd ? 'source-maps' : 'eval'
+
   const module = {
     rules: [
+      {
+        test: /\.js$/,
+        loader: 'source-map-loader',
+        include: /integec/,
+      },
       {
         test: /\.js$/,
         exclude: /node_modules/,
@@ -28,6 +46,12 @@ module.exports = function() {
           loader: 'babel-loader',
           options: babelrc,
         },
+      },
+      {
+        test: /\.js$/,
+        loader: 'babel-loader',
+        include: /immutable-ext/,
+        options: babelrc,
       },
       {
         test: /\.html$/,
@@ -38,13 +62,54 @@ module.exports = function() {
           },
         ],
       },
+      {
+        test: /\.css$/,
+        exclude: /node_modules/,
+        use: [
+          'style-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              modules: true,
+              importLoaders: 1,
+            },
+          },
+          'postcss-loader',
+        ],
+      },
+      {
+        test: /\.css$/,
+        include: /node_modules/,
+        use: [
+          'style-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              importLoaders: 1,
+            },
+          },
+          'postcss-loader',
+        ],
+      },
+      {
+        test: /\.(png|svg|jpg|gif|woff|woff2|eot|ttf|otf)$/,
+        use: ['file-loader'],
+      },
     ],
   }
 
   const plugins = [
+    new webpack.LoaderOptionsPlugin({
+      options: {
+        postcss: [autoprefixer],
+      },
+    }),
     new HtmlWebPackPlugin({
       template: './src/index.html',
-      filename: './index.html',
+      inject: 'body',
+    }),
+    new webpack.DefinePlugin({
+      ...gitInfo,
     }),
   ]
 
@@ -58,5 +123,5 @@ module.exports = function() {
     },
   }
 
-  return { module, resolve, plugins }
+  return { module, devtool, resolve, plugins }
 }
