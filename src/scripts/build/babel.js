@@ -29,6 +29,11 @@ const copyFiles = args.includes('--no-copy-files')
   ? []
   : ['--copy-files']
 
+const sourceMaps =
+  args.includes('--no-source-maps') || args.includes('source-maps')
+    ? []
+    : ['--source-maps']
+
 const useSpecifiedOutDir = args.includes('--out-dir')
 const outDir = useSpecifiedOutDir ? [] : ['--out-dir', 'dist']
 
@@ -38,7 +43,17 @@ if (!useSpecifiedOutDir && !args.includes('--no-clean')) {
 
 const result = spawn.sync(
   resolveBin('@babel/cli', { executable: 'babel' }),
-  [...outDir, ...copyFiles, ...ignore, ...config, 'src'].concat(args),
+  [
+    ...outDir,
+    ...copyFiles,
+    ...ignore,
+    ...sourceMaps,
+    ...config,
+    'src',
+  ]
+    .filter(f => f != null)
+    .filter(f => f.trim() !== '--no-source-maps')
+    .concat(args),
   { stdio: 'inherit' }
 )
 

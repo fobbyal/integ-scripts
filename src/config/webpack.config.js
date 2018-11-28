@@ -9,9 +9,26 @@ const gridTools = fromRoot('node_modules/@integec/grid-tools')
 const git = require('git-rev-sync')
 const webpack = require('webpack')
 const autoprefixer = require('autoprefixer')
+const ErrorOverlayPlugin = require('error-overlay-webpack-plugin')
 
 module.exports = function(env, argv) {
-  const isProd = argv.mode === 'production' || env.production
+  const isProd =
+    argv.mode === 'production' || (env != null && env.production)
+
+  const entry = isProd
+    ? {
+        app: './src/index.js',
+        vendor: [
+          'react',
+          'react-dom',
+          'moment',
+          'ramda',
+          'redux',
+          'react-redux',
+          'semantic-ui-react',
+        ],
+      }
+    : undefined
 
   const gitInfo = {
     GIT_HASH:
@@ -111,7 +128,8 @@ module.exports = function(env, argv) {
     new webpack.DefinePlugin({
       ...gitInfo,
     }),
-  ]
+    isProd ? new ErrorOverlayPlugin() : undefined,
+  ].filter(p => p != null)
 
   const resolve = {
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
@@ -123,5 +141,5 @@ module.exports = function(env, argv) {
     },
   }
 
-  return { module, devtool, resolve, plugins }
+  return { entry, module, devtool, resolve, plugins }
 }

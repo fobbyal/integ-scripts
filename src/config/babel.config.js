@@ -9,12 +9,14 @@ const isPreact = parseEnv('BUILD_PREACT', false)
 const isRollup = parseEnv('BUILD_ROLLUP', false)
 const isUMD = BUILD_FORMAT === 'umd'
 const isCJS = BUILD_FORMAT === 'cjs'
-const isWebpack = parseEnv('BUILD_WEBPACK', true)
+const isWebpack = parseEnv('BUILD_WEBPACK', false)
 const treeshake = parseEnv('BUILD_TREESHAKE', isRollup || isWebpack)
 const alias = parseEnv(
   'BUILD_ALIAS',
   isPreact ? { react: 'preact' } : null
 )
+console.log('isWebpack', isWebpack)
+console.log('isRollup', isRollup)
 
 // console.log('process env is', process.env)
 
